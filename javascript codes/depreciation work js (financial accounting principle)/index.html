@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depreciation Calculator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body style="background-color: #dee1e3;">
+  <div class="header " style="display: flex;justify-content: space-between; padding: 10px;">
+    <div class="logo">
+      <h6>Financial Accounting Principle</h6>
+    </div>
+    <div class="faculty px-5">
+      <h6>Faculty : Sir Measum</h6>
+    </div>
+  </div>
+  <div class="container mt-5">
+    <h2 style="text-align: center;"><span style="border-bottom: 8px solid rebeccapurple;">Depreciation Calculator</span>
+    </h2>
+    <div class="form-group">
+      <label for="cost">Cost:</label>
+      <input type="number" class="form-control" id="cost">
+    </div>
+    <div class="form-group">
+      <label for="scrapValue">Scrap Value:</label>
+      <input type="number" class="form-control" id="scrapValue">
+    </div>
+    <div class="form-group">
+      <label for="life">Life (in years):</label>
+      <input type="number" class="form-control" id="life">
+    </div>
+    <div class="form-group">
+      <label for="percentage">Depreciation Percentage (in %):</label>
+      <input type="number" class="form-control" id="percentage">
+    </div>
+    <button class="btn " style="background-color: blueviolet;color: white;" id="calculate">Calculate</button>
+    <hr>
+    <h3>Depreciation Results:</h3>
+    <div id="results"></div>
+
+  </div>
+
+  <div class="footer" style="background-color: blueviolet; padding: 50px; color: white; text-align: center;">
+    <h4>Design By Awais Shaikh</h4>
+  </div>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $("#calculate").click(function () {
+      var cost = parseFloat($("#cost").val());
+      var scrapValue = parseFloat($("#scrapValue").val());
+      var life = parseInt($("#life").val());
+      var percentage = parseFloat($("#percentage").val());
+
+      var straightLineSchedule = [];
+      var straightLineDep = (cost - scrapValue) / life;
+      var accumulatedDepStraight = 0;
+
+      for (var i = 1; i <= life; i++) {
+        var depreciation = straightLineDep;
+        accumulatedDepStraight += depreciation;
+        var nbv = cost - accumulatedDepStraight;
+        straightLineSchedule.push({
+          year: i,
+          life: life,
+          cost: cost.toFixed(2),
+          scrapValue: scrapValue.toFixed(2),
+          depreciation_amount: accumulatedDepStraight.toFixed(2),
+          nbv: nbv.toFixed(2)
+        });
+      }
+
+      var reducingSchedule = [];
+      var nbvReducing = cost;
+      var accumulatedDepReducing = 0;
+
+      for (var j = 1; j <= life; j++) {
+        var depreciationReducing = (nbvReducing - accumulatedDepReducing) * (percentage / 100);
+        accumulatedDepReducing += depreciationReducing;
+        var nbv = cost - accumulatedDepReducing;
+        reducingSchedule.push({
+          year: j,
+          cost: cost.toFixed(2),
+          depreciation_amount: depreciationReducing.toFixed(2),
+          accumulated_depreciation: (j === 1) ? '0.00' : accumulatedDepReducing.toFixed(2),
+          nbv: nbv.toFixed(2)
+        });
+      }
+
+      var resultsHTML = "<p><strong><center><span style='border-bottom: 8px solid rebeccapurple;'>Straight Line Method:</span></center></strong></p>";
+      resultsHTML += "<table class='table table-hover  '><thead><tr><th>Year</th><th>Life</th><th>Cost</th><th>Scrap Value</th><th>Depreciation Amount</th><th>Net Book Value</th></tr></thead><tbody>";
+      straightLineSchedule.forEach(function (item) {
+        resultsHTML += "<tr><td>" + item.year + "</td><td>" + item.life + "</td><td>$" + item.cost + "</td><td>$" + item.scrapValue + "</td><td>$" + item.depreciation_amount + "</td><td>$" + item.nbv + "</td></tr>";
+      });
+      resultsHTML += "</tbody></table>";
+
+      resultsHTML += "<p><strong><center><span style='border-bottom: 8px solid rebeccapurple;''>Reducing Balance Method:</span></center></strong></p>";
+      resultsHTML += "<table class='table table-hover '><thead><tr><th>Year</th><th>Cost</th><th>Accumulated Depreciation</th><th>Depreciation Amount</th><th>Net Book Value</th></tr></thead><tbody>";
+      reducingSchedule.forEach(function (item) {
+        resultsHTML += "<tr><td>" + item.year + "</td><td>$" + item.cost + "</td><td>$" + item.accumulated_depreciation + "</td><td>$" + item.depreciation_amount + "</td><td>$" + item.nbv + "</td></tr>";
+      });
+      resultsHTML += "</tbody></table>";
+
+      $("#results").html(resultsHTML);
+    });
+  });
+</script>
